@@ -1,2 +1,2 @@
 # PixelArtConverter
-Converts image to pixel art
+This program will convert image into a pixel art
