@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -8,23 +9,25 @@ public class main {
 
 	public static void main(String[] args) throws Exception {
 		String desktopPath = "C:\\Users\\jzhao\\Desktop\\";
-		String imageName = "swan.jpg";
+		String imageName = "pink.png";
 		int horiPixelCount = 32;
 		int vertiPixelCount = 32;
 		BufferedImage original = ImageIO.read(new File(desktopPath + imageName));
 		BufferedImage pixelArt = toPixelArt(original, horiPixelCount, vertiPixelCount);
 		ImageIO.write(pixelArt, "png", new File(desktopPath + "PIXEL_" + imageName));
-		System.out.println("Finsihed");
 	}
 
 	public static BufferedImage toPixelArt(BufferedImage original, int horiPixelCount, int vertiPixelCount) {
 		// return a bufferedimage that is the same size as the original image but
 		// pixelized
-		int pixelWidth = original.getWidth() / horiPixelCount;
-		int pixelHeight = original.getHeight() / vertiPixelCount;
+		int pixelWidth = (int) Math.round(original.getWidth() / ((double) horiPixelCount));
+		int pixelHeight = (int) Math.round(original.getHeight() / ((double) vertiPixelCount));
 		BufferedImage pixelArt = new BufferedImage(pixelWidth * horiPixelCount, pixelHeight * vertiPixelCount,
 				BufferedImage.TYPE_INT_RGB);
-		pixelArt.createGraphics().drawImage(original, 0, 0, Color.WHITE, null);
+		Graphics2D graphics = pixelArt.createGraphics();
+		graphics.setPaint(Color.WHITE);
+		graphics.fillRect(0, 0, pixelArt.getWidth(), pixelArt.getHeight());
+		graphics.drawImage(original, 0, 0, Color.WHITE, null);
 		int[][][] originalPixels = convertTo2DIntArr(pixelArt);
 
 		for (int i = 0; i < vertiPixelCount; i++) {
@@ -57,14 +60,14 @@ public class main {
 						pixelArt.setRGB(ii * pixelWidth + x, i * pixelHeight + y, argb);
 					}
 				}
-				
-				//black grid
+
+				// black grid
 				for (int y = 0; y < pixelHeight; y++) {
-						pixelArt.setRGB(ii * pixelWidth, i * pixelHeight + y, 0);
+					pixelArt.setRGB(ii * pixelWidth, i * pixelHeight + y, 0);
 				}
 				for (int x = 0; x < pixelWidth; x++) {
 					pixelArt.setRGB(ii * pixelWidth + x, i * pixelHeight, 0);
-			}
+				}
 			}
 		}
 
@@ -78,7 +81,7 @@ public class main {
 
 		int[][][] result = new int[4][height][width];
 
-		for (int pixel = 0, row = 0, col = 0; pixel < width * height; pixel ++) {
+		for (int pixel = 0, row = 0, col = 0; pixel < width * height; pixel++) {
 			int curPixel = image.getRGB(col, row);
 			result[0][row][col] = ((int) curPixel & 0xFF000000) >> 24; // a
 			result[1][row][col] = ((int) curPixel & 0x00FF0000) >> 16; // r
